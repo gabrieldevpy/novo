@@ -15,24 +15,24 @@ export default function LoginPage() {
           <div className="flex justify-center mb-4">
             <Logo className="w-16 h-16 text-accent" />
           </div>
-          <CardTitle as="div" className="text-2xl font-bold">CloakDash Login</CardTitle>
-          <CardDescription as="div">Enter your credentials to access your dashboard</CardDescription>
+          <CardTitle as="div" className="text-2xl font-bold">Login no CloakDash</CardTitle>
+          <CardDescription as="div">Insira suas credenciais para acessar seu painel</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="m@example.com" required />
+              <Input id="email" type="email" placeholder="m@exemplo.com" required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Senha</Label>
               <Input id="password" type="password" required />
             </div>
             <Button asChild type="submit" className="w-full">
-              <Link href="/dashboard">Login</Link>
+              <Link href="/dashboard">Entrar</Link>
             </Button>
             <Button variant="outline" className="w-full">
-              Login with Google
+              Entrar com Google
             </Button>
           </div>
         </CardContent>

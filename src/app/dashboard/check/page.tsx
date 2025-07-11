@@ -23,9 +23,9 @@ export default function CheckPage() {
     <div className="max-w-2xl mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle>Manual Bot Check</CardTitle>
+          <CardTitle>Verificação Manual de Bot</CardTitle>
           <CardDescription>
-            Verify your current connection status. This tool analyzes your browser signature to determine if you appear as a human or a bot.
+            Verifique o status da sua conexão atual. Esta ferramenta analisa a assinatura do seu navegador para determinar se você aparece como um humano ou um bot.
           </CardDescription>
         </CardHeader>
         <CardContent className="text-center">
@@ -33,12 +33,12 @@ export default function CheckPage() {
             {isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Checking...
+                Verificando...
               </>
             ) : (
               <>
                 <Shield className="mr-2 h-4 w-4" />
-                Check My Status
+                Verificar Meu Status
               </>
             )}
           </Button>
@@ -48,15 +48,15 @@ export default function CheckPage() {
               <Alert variant={result.isBot ? 'destructive' : 'default'} className={!result.isBot ? "border-accent" : ""}>
                 {result.isBot ? <Bot className="h-4 w-4" /> : <User className="h-4 w-4" />}
                 <AlertTitle className="flex items-center gap-2">
-                  {result.isBot ? 'Result: Bot Detected' : 'Result: Human Verified'}
-                  <Badge variant="outline">{Math.round(result.confidence * 100)}% confidence</Badge>
+                  {result.isBot ? 'Resultado: Bot Detectado' : 'Resultado: Humano Verificado'}
+                  <Badge variant="outline">{Math.round(result.confidence * 100)}% de confiança</Badge>
                   {result.botType && <Badge variant="secondary">{result.botType}</Badge>}
                 </AlertTitle>
                 <AlertDescription className="mt-2">
-                  <p className="font-semibold mb-2">{result.isBot ? "You would be blocked by the cloaker." : "You are passing as a human."}</p>
+                  <p className="font-semibold mb-2">{result.isBot ? "Você seria bloqueado pelo cloaker." : "Você está passando como um humano."}</p>
                   <p className="text-sm text-muted-foreground mb-4">{result.reason}</p>
                   <div className="p-2 bg-muted/50 rounded-md">
-                    <p className="text-xs font-semibold">Your User Agent:</p>
+                    <p className="text-xs font-semibold">Seu User Agent:</p>
                     <p className="text-xs font-mono break-all text-muted-foreground">{result.userAgent}</p>
                   </div>
                 </AlertDescription>

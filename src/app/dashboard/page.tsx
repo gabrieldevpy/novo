@@ -5,7 +5,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Bot, FileDown, Filter, User, Route as RouteIcon, ShieldCheck } from 'lucide-react';
+import { Bot, FileDown, Filter, User, Route as RouteIcon } from 'lucide-react';
 import type { LogEntry } from '@/lib/types';
 import Link from 'next/link';
 
@@ -17,32 +17,32 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Total Accesses</CardTitle>
+            <CardTitle className="text-sm font-medium">Acessos Totais</CardTitle>
             <User className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">No data available yet</p>
+            <p className="text-xs text-muted-foreground">Nenhum dado disponível ainda</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Bots Blocked</CardTitle>
+            <CardTitle className="text-sm font-medium">Bots Bloqueados</CardTitle>
             <Bot className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">No data available yet</p>
+            <p className="text-xs text-muted-foreground">Nenhum dado disponível ainda</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium">Active Routes</CardTitle>
+            <CardTitle className="text-sm font-medium">Rotas Ativas</CardTitle>
             <RouteIcon className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">Manage your cloaked routes</p>
+            <p className="text-xs text-muted-foreground">Gerencie suas rotas cloaked</p>
           </CardContent>
         </Card>
       </div>
@@ -50,40 +50,40 @@ export default function DashboardPage() {
       <Card>
         <CardHeader>
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <CardTitle>Recent Activity Logs</CardTitle>
+            <CardTitle>Logs de Atividade Recentes</CardTitle>
             <div className="flex flex-col gap-2 md:flex-row md:items-center">
               <div className="flex items-center space-x-2">
                 <Switch id="emergency-mode" />
-                <Label htmlFor="emergency-mode" className="text-destructive">Emergency Mode</Label>
+                <Label htmlFor="emergency-mode" className="text-destructive">Modo de Emergência</Label>
               </div>
               <Button asChild variant="outline">
-                <Link href="/dashboard/check">Run Manual Check</Link>
+                <Link href="/dashboard/check">Fazer Verificação Manual</Link>
               </Button>
               <div className="flex gap-2">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="outline" size="sm" className="h-8 gap-1">
                         <Filter className="w-3.5 h-3.5" />
-                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Filter</span>
+                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Filtrar</span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                      <DropdownMenuLabel>Filtrar por</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>IP Address</DropdownMenuItem>
-                      <DropdownMenuItem>Route</DropdownMenuItem>
-                      <DropdownMenuItem>Type (Bot/Human)</DropdownMenuItem>
+                      <DropdownMenuItem>Endereço IP</DropdownMenuItem>
+                      <DropdownMenuItem>Rota</DropdownMenuItem>
+                      <DropdownMenuItem>Tipo (Bot/Humano)</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 <Button variant="outline" size="sm" className="h-8 gap-1">
                   <FileDown className="w-3.5 h-3.5" />
-                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Export</span>
+                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Exportar</span>
                 </Button>
               </div>
             </div>
           </div>
           <div className="mt-4">
-              <Input placeholder="Filter by IP, route, user agent..." />
+              <Input placeholder="Filtrar por IP, rota, user agent..." />
           </div>
         </CardHeader>
         <CardContent>
@@ -91,9 +91,9 @@ export default function DashboardPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Type</TableHead>
-                  <TableHead>IP Address</TableHead>
-                  <TableHead>Route</TableHead>
+                  <TableHead>Tipo</TableHead>
+                  <TableHead>Endereço IP</TableHead>
+                  <TableHead>Rota</TableHead>
                   <TableHead className="hidden md:table-cell">User Agent</TableHead>
                   <TableHead className="hidden sm:table-cell">Timestamp</TableHead>
                 </TableRow>
@@ -102,7 +102,7 @@ export default function DashboardPage() {
                 {mockLogs.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="h-24 text-center">
-                      No activity logs found.
+                      Nenhum log de atividade encontrado.
                     </TableCell>
                   </TableRow>
                 ) : (

@@ -21,7 +21,7 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Home, LineChart, LogOut, Route as RouteIcon, ShieldCheck } from 'lucide-react';
+import { Home, LogOut, Route as RouteIcon, ShieldCheck } from 'lucide-react';
 import Logo from '@/components/icons/logo';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -40,7 +40,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <SidebarMenuButton asChild>
                 <Link href="/dashboard">
                   <Home />
-                  Dashboard
+                  Painel
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -48,7 +48,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <SidebarMenuButton asChild>
                 <Link href="/dashboard/routes">
                   <RouteIcon />
-                  Routes
+                  Rotas
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -56,7 +56,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <SidebarMenuButton asChild>
                 <Link href="/dashboard/check">
                   <ShieldCheck />
-                  Manual Check
+                  Verificação Manual
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -68,7 +68,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <SidebarMenuButton asChild>
                 <Link href="/">
                   <LogOut />
-                  Logout
+                  Sair
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -100,7 +100,7 @@ function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Affiliate User</p>
+            <p className="text-sm font-medium leading-none">Usuário Afiliado</p>
             <p className="text-xs leading-none text-muted-foreground">user@example.com</p>
           </div>
         </DropdownMenuLabel>
@@ -108,7 +108,7 @@ function UserNav() {
         <DropdownMenuItem asChild>
           <Link href="/">
             <LogOut className="w-4 h-4 mr-2" />
-            Log out
+            Sair
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
