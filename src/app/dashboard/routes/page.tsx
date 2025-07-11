@@ -16,10 +16,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import type { RouteConfig } from '@/lib/types';
-import { Copy, MoreHorizontal, PlusCircle, Loader2 } from 'lucide-react';
+import { Copy, MoreHorizontal, PlusCircle, Loader2, ExternalLink } from 'lucide-react';
 import { createRoute, getRoutes } from './actions';
 import { useToast } from '@/hooks/use-toast';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import Link from 'next/link';
 
 
 const templates = {
@@ -40,6 +41,14 @@ const templates = {
 export default function RoutesPage() {
     const [routes, setRoutes] = useState<RouteConfig[]>([]);
     const [isPending, startTransition] = useTransition();
+    const [baseUrl, setBaseUrl] = useState('');
+
+     useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setBaseUrl(window.location.origin);
+        }
+        fetchRoutes();
+    }, []);
     
     const fetchRoutes = () => {
         startTransition(async () => {
@@ -48,9 +57,11 @@ export default function RoutesPage() {
         });
     }
 
-    useEffect(() => {
-        fetchRoutes();
-    }, []);
+    const copyToClipboard = (slug: string) => {
+        navigator.clipboard.writeText(`${baseUrl}/r/${slug}`);
+        // Consider adding a toast notification for better UX
+    }
+
 
     return (
         <Card>
@@ -58,7 +69,7 @@ export default function RoutesPage() {
                 <div className="flex items-center justify-between">
                     <div>
                         <CardTitle>Rotas Cloaked</CardTitle>
-                        <CardDescription>Gerencie e crie suas rotas cloaked.</CardDescription>
+                        <CardDescription>Gerencie e crie suas rotas cloaked. Use o prefixo /r/ para acessá-las.</CardDescription>
                     </div>
                     <CreateRouteDialog onRouteCreated={fetchRoutes}/>
                 </div>
@@ -97,14 +108,24 @@ export default function RoutesPage() {
                                             {route.active ? 'Ativo' : 'Inativo'}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="font-mono">/{route.slug}</TableCell>
+                                    <TableCell className="font-mono flex items-center gap-2">
+                                        /r/{route.slug}
+                                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyToClipboard(route.slug)}>
+                                            <Copy className="w-3 h-3"/>
+                                        </Button>
+                                    </TableCell>
                                     <TableCell className="hidden md:table-cell font-mono text-xs truncate max-w-xs">{route.redirectBotTo}</TableCell>
                                     <TableCell className="hidden lg:table-cell font-mono text-xs truncate max-w-xs">{route.realUrl}</TableCell>
                                     <TableCell className="hidden sm:table-cell">{new Date(route.createdAt).toLocaleDateString()}</TableCell>
                                     <TableCell className="text-right">
+                                       <Link href={`/r/${route.slug}`} target="_blank" passHref>
+                                           <Button variant="outline" size="icon" className="mr-2 h-8 w-8">
+                                             <ExternalLink className="h-4 w-4" />
+                                          </Button>
+                                       </Link>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon">
+                                                <Button variant="ghost" size="icon" className="h-8 w-8">
                                                     <MoreHorizontal className="w-4 h-4" />
                                                 </Button>
                                             </DropdownMenuTrigger>
@@ -165,7 +186,7 @@ function CreateRouteDialog({ onRouteCreated }: { onRouteCreated: () => void }) {
             if (result.success) {
                 toast({
                     title: 'Sucesso!',
-                    description: `A rota /${result.route?.slug} foi criada.`,
+                    description: `A rota /r/${result.route?.slug} foi criada.`,
                 });
                 onRouteCreated();
                 setIsOpen(false);
@@ -192,7 +213,7 @@ function CreateRouteDialog({ onRouteCreated }: { onRouteCreated: () => void }) {
                 <DialogHeader>
                     <DialogTitle>Criar Nova Rota Cloaked</DialogTitle>
                     <DialogDescription>
-                        Configure uma nova rota. Comece com um modelo ou do zero.
+                        Configure uma nova rota. O slug será acessível via /r/[seu-slug].
                     </DialogDescription>
                 </DialogHeader>
                 <div className="flex gap-2 mb-4 pt-4">
@@ -209,10 +230,13 @@ function CreateRouteDialog({ onRouteCreated }: { onRouteCreated: () => void }) {
                                 <FormItem className="grid grid-cols-4 items-center gap-4">
                                     <FormLabel className="text-right">Slug</FormLabel>
                                     <div className="col-span-3">
-                                        <FormControl>
-                                            <Input placeholder="meu-produto-incrivel" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
+                                       <div className="flex items-center">
+                                            <span className="text-muted-foreground text-sm mr-2 p-2 bg-muted rounded-l-md border border-r-0 border-input">/r/</span>
+                                            <FormControl>
+                                                <Input placeholder="meu-produto-incrivel" {...field} className="rounded-l-none" />
+                                            </FormControl>
+                                        </div>
+                                        <FormMessage className='col-start-2 col-span-3 mt-2' />
                                     </div>
                                 </FormItem>
                             )}
@@ -227,6 +251,7 @@ function CreateRouteDialog({ onRouteCreated }: { onRouteCreated: () => void }) {
                                         <FormControl>
                                             <Input placeholder="https://seusite.com/oferta" {...field} />
                                         </FormControl>
+                                         <FormDescription>Esta é a página "whitehat" que os humanos verão.</FormDescription>
                                         <FormMessage />
                                     </div>
                                 </FormItem>
@@ -242,6 +267,7 @@ function CreateRouteDialog({ onRouteCreated }: { onRouteCreated: () => void }) {
                                         <FormControl>
                                             <Input {...field} />
                                         </FormControl>
+                                         <FormDescription>Esta é a página "blackhat" para onde os bots serão enviados.</FormDescription>
                                         <FormMessage />
                                     </div>
                                 </FormItem>
@@ -278,6 +304,7 @@ function CreateRouteDialog({ onRouteCreated }: { onRouteCreated: () => void }) {
                                         <FormControl>
                                             <Textarea placeholder="facebookexternalhit/1.1" className="min-h-[80px]" {...field} />
                                         </FormControl>
+                                        <FormDescription>Um por linha. Bloqueia correspondências parciais.</FormDescription>
                                         <FormMessage />
                                     </div>
                                 </FormItem>
@@ -293,6 +320,7 @@ function CreateRouteDialog({ onRouteCreated }: { onRouteCreated: () => void }) {
                                         <FormControl>
                                             <Textarea placeholder="66.249.64.0/19" className="min-h-[80px]" {...field} />
                                         </FormControl>
+                                        <FormDescription>Um por linha. Suporta faixas de IP (CIDR).</FormDescription>
                                         <FormMessage />
                                     </div>
                                 </FormItem>
@@ -313,5 +341,3 @@ function CreateRouteDialog({ onRouteCreated }: { onRouteCreated: () => void }) {
         </Dialog>
     )
 }
-
-    

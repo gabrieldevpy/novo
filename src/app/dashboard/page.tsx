@@ -1,3 +1,6 @@
+
+'use client'
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -5,24 +8,43 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Bot, FileDown, Filter, User, Route as RouteIcon } from 'lucide-react';
+import { Bot, FileDown, Filter, User, Route as RouteIcon, Users, ShieldAlert, Loader2 } from 'lucide-react';
 import type { LogEntry } from '@/lib/types';
 import Link from 'next/link';
+import { useEffect, useState, useTransition } from 'react';
+import { getDashboardStats, type DashboardStats } from './actions';
+import { Badge } from '@/components/ui/badge';
 
-const mockLogs: LogEntry[] = [];
+const initialState: DashboardStats = {
+  totalAccesses: 0,
+  botsBlocked: 0,
+  humanAccesses: 0,
+  activeRoutes: 0,
+  recentLogs: [],
+};
 
 export default function DashboardPage() {
+  const [stats, setStats] = useState<DashboardStats>(initialState);
+  const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    startTransition(async () => {
+      const fetchedStats = await getDashboardStats();
+      setStats(fetchedStats);
+    });
+  }, []);
+
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium">Acessos Totais</CardTitle>
-            <User className="w-4 h-4 text-muted-foreground" />
+            <Users className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">Nenhum dado disponível ainda</p>
+            {isPending ? <Loader2 className="h-6 w-6 animate-spin" /> : <div className="text-2xl font-bold">{stats.totalAccesses}</div>}
+            <p className="text-xs text-muted-foreground">Humanos e bots combinados</p>
           </CardContent>
         </Card>
         <Card>
@@ -31,8 +53,18 @@ export default function DashboardPage() {
             <Bot className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">Nenhum dado disponível ainda</p>
+            {isPending ? <Loader2 className="h-6 w-6 animate-spin" /> : <div className="text-2xl font-bold">{stats.botsBlocked}</div>}
+            <p className="text-xs text-muted-foreground">Acessos de bots identificados</p>
+          </CardContent>
+        </Card>
+         <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium">Acessos Humanos</CardTitle>
+            <User className="w-4 h-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+             {isPending ? <Loader2 className="h-6 w-6 animate-spin" /> : <div className="text-2xl font-bold">{stats.humanAccesses}</div>}
+            <p className="text-xs text-muted-foreground">Acessos legítimos permitidos</p>
           </CardContent>
         </Card>
         <Card>
@@ -41,7 +73,7 @@ export default function DashboardPage() {
             <RouteIcon className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            {isPending ? <Loader2 className="h-6 w-6 animate-spin" /> : <div className="text-2xl font-bold">{stats.activeRoutes}</div>}
             <p className="text-xs text-muted-foreground">Gerencie suas rotas cloaked</p>
           </CardContent>
         </Card>
@@ -54,7 +86,7 @@ export default function DashboardPage() {
             <div className="flex flex-col gap-2 md:flex-row md:items-center">
               <div className="flex items-center space-x-2">
                 <Switch id="emergency-mode" />
-                <Label htmlFor="emergency-mode" className="text-destructive">Modo de Emergência</Label>
+                <Label htmlFor="emergency-mode" className="text-destructive flex items-center gap-1"><ShieldAlert className="w-4 h-4" /> Modo de Emergência</Label>
               </div>
               <Button asChild variant="outline">
                 <Link href="/dashboard/check">Fazer Verificação Manual</Link>
@@ -99,23 +131,32 @@ export default function DashboardPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockLogs.length === 0 ? (
+                {isPending && (
                   <TableRow>
                     <TableCell colSpan={5} className="h-24 text-center">
-                      Nenhum log de atividade encontrado.
+                       <Loader2 className="mx-auto h-8 w-8 animate-spin text-muted-foreground" />
+                    </TableCell>
+                  </TableRow>
+                )}
+                {!isPending && stats.recentLogs.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                      Nenhum log de atividade encontrado. Crie uma rota e acesse-a para ver os dados aqui.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  mockLogs.map((log) => (
+                  stats.recentLogs.map((log) => (
                     <TableRow key={log.id}>
                       <TableCell>
-                        <div className="flex items-center gap-2">
-                            {log.type === 'bot' ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
-                            <span className="capitalize">{log.botType || log.type}</span>
-                        </div>
+                        <Badge variant={log.type === 'bot' ? 'destructive' : 'default'} className={log.type === 'human' ? "border-accent text-accent-foreground" : ""}>
+                           <div className="flex items-center gap-2">
+                              {log.type === 'bot' ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
+                              <span className="capitalize">{log.botType || log.type}</span>
+                          </div>
+                        </Badge>
                       </TableCell>
                       <TableCell className="font-mono">{log.ip}</TableCell>
-                      <TableCell className="font-mono">{log.route}</TableCell>
+                      <TableCell className="font-mono">/r/{log.route}</TableCell>
                       <TableCell className="hidden md:table-cell max-w-xs truncate font-mono text-xs">{log.userAgent}</TableCell>
                       <TableCell className="hidden sm:table-cell">{new Date(log.timestamp).toLocaleString()}</TableCell>
                     </TableRow>

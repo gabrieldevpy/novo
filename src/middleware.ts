@@ -3,40 +3,61 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { analyzeUserAgent } from '@/ai/flows/analyze-user-agent';
 import { getRouteBySlug } from '@/app/dashboard/routes/actions';
+import { logAccess } from '@/app/dashboard/actions';
 
 export async function middleware(request: NextRequest) {
   const userAgent = request.headers.get('user-agent') || 'Unknown';
-  const slug = request.nextUrl.pathname.split('/').pop() || '';
+  const ip = request.ip || 'Unknown';
+  const slug = request.nextUrl.pathname.replace('/r/', '');
 
-  // Ignore requests for static assets or internal Next.js paths
-  if (slug.includes('.') || slug.startsWith('_next')) {
-      return NextResponse.next();
+  // Ignore requests for static assets, internal Next.js paths, or the dashboard itself
+  if (
+    request.nextUrl.pathname.includes('.') ||
+    request.nextUrl.pathname.startsWith('/_next') ||
+    request.nextUrl.pathname.startsWith('/dashboard') ||
+    request.nextUrl.pathname.startsWith('/blocked')
+  ) {
+    return NextResponse.next();
+  }
+
+  // Only proceed if there is a slug
+  if (!slug) {
+    return NextResponse.next();
   }
 
   try {
     const routeConfig = await getRouteBySlug(slug);
 
-    // If no route is configured for this slug, show the default page or 404
-    if (!routeConfig) {
-      // You could redirect to a 404 page here if you prefer
+    if (!routeConfig || !routeConfig.active) {
+      // If no active route is found, proceed to the normal page (likely a 404)
       return NextResponse.next();
     }
+
+    const { isBot, botType } = await analyzeUserAgent({ userAgent });
     
-    // For now, we will use the AI to detect bots.
-    // In a real scenario, you would also check against the denyUserAgents and denyIps lists from routeConfig.
-    const { isBot } = await analyzeUserAgent({ userAgent });
+    // Log the access attempt
+    await logAccess({
+      ip,
+      userAgent,
+      route: slug,
+      type: isBot ? 'bot' : 'human',
+      botType: botType,
+    });
+
 
     if (isBot) {
-        // Bot detected, redirect to the "safe" page or block page
-        const botUrl = new URL(routeConfig.redirectBotTo);
-        return NextResponse.redirect(botUrl);
+      // Bot detected, redirect to the blocked page, which then redirects to the safe URL.
+      const blockedUrl = new URL('/blocked', request.url);
+      // Optional: pass redirect target to blocked page if needed later
+      // blockedUrl.searchParams.set('redirect_to', routeConfig.redirectBotTo);
+      return NextResponse.rewrite(blockedUrl);
     }
 
-    // Human detected, redirect to the real URL
-    const realUrl = new URL(routeConfig.realUrl);
-    // You can pass through query params if needed
+    // Human detected, rewrite to show the real content page.
+    // This keeps the cloaked URL in the address bar.
+    const realUrl = new URL(`/routes/${slug}`, request.url);
     realUrl.search = request.nextUrl.search;
-    return NextResponse.redirect(realUrl);
+    return NextResponse.rewrite(realUrl);
 
   } catch (error) {
     console.error('Cloaking Middleware Error:', error);
@@ -49,9 +70,10 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Apply middleware only to the cloaked routes path.
-  // This will match /routes/some-slug, /routes/another-product, etc.
-  matcher: '/routes/:slug*',
+  // Match all paths except for API routes, static files, and image optimization.
+   matcher: [
+    '/r/:slug*',
+    // This is an alternative if you want to match all paths
+    // '/((?!api|_next/static|_next/image|favicon.ico|dashboard|blocked).*)',
+  ],
 };
-
-    
