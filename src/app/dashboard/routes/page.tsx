@@ -1,3 +1,7 @@
+
+'use client';
+
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +21,21 @@ const mockRoutes: RouteConfig[] = [
     { id: '3', slug: 'offer-3', redirectBotTo: 'https://yahoo.com', active: false, template: 'TikTok Ads', createdAt: '2023-10-24T09:00:00Z', totalAccesses: 1532, botsBlocked: 211 },
     { id: '4', slug: 'main-offer', redirectBotTo: 'https://duckduckgo.com', active: true, template: 'Custom', createdAt: '2023-10-23T14:00:00Z', totalAccesses: 10231, botsBlocked: 3452 },
 ];
+
+const templates = {
+    'Facebook Ads': {
+        denyUserAgents: `facebookexternalhit\nFacebot`,
+        denyIps: `# Facebook / Meta\n31.13.24.0/21\n69.63.176.0/20\n66.220.144.0/20\n69.171.224.0/19\n157.240.0.0/16`,
+    },
+    'Google Ads': {
+        denyUserAgents: `Googlebot\nGooglebot-Image\nMediapartners-Google\nAdsBot-Google\nAdsBot-Google-Mobile`,
+        denyIps: `# Googlebot\n66.249.64.0/19\n64.233.160.0/19\n72.14.192.0/18\n203.208.32.0/19\n74.125.0.0/16`,
+    },
+    'TikTok Ads': {
+        denyUserAgents: `TikTokBot`,
+        denyIps: `# TikTok\n47.242.0.0/16\n161.117.0.0/16\n170.33.0.0/16`,
+    },
+};
 
 export default function RoutesPage() {
     return (
@@ -78,6 +97,15 @@ export default function RoutesPage() {
 }
 
 function CreateRouteDialog() {
+    const [denyUserAgents, setDenyUserAgents] = useState('');
+    const [denyIps, setDenyIps] = useState('');
+
+    const applyTemplate = (templateName: keyof typeof templates) => {
+        const template = templates[templateName];
+        setDenyUserAgents(template.denyUserAgents);
+        setDenyIps(template.denyIps);
+    };
+
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -95,9 +123,9 @@ function CreateRouteDialog() {
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     <div className="flex gap-2 mb-4">
-                        <Button variant="outline">Facebook Ads Template</Button>
-                        <Button variant="outline">Google Ads Template</Button>
-                        <Button variant="outline">TikTok Ads Template</Button>
+                        <Button variant="outline" onClick={() => applyTemplate('Facebook Ads')}>Facebook Ads Template</Button>
+                        <Button variant="outline" onClick={() => applyTemplate('Google Ads')}>Google Ads Template</Button>
+                        <Button variant="outline" onClick={() => applyTemplate('TikTok Ads')}>TikTok Ads Template</Button>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="slug" className="text-right">
@@ -129,7 +157,13 @@ function CreateRouteDialog() {
                         <Label htmlFor="denyUserAgents" className="text-right pt-2">
                            Deny User Agents
                         </Label>
-                        <Textarea id="denyUserAgents" placeholder="Googlebot/2.1&#10;facebookexternalhit/1.1" className="col-span-3 min-h-[80px]" />
+                        <Textarea id="denyUserAgents" value={denyUserAgents} onChange={e => setDenyUserAgents(e.target.value)} placeholder="facebookexternalhit/1.1" className="col-span-3 min-h-[80px]" />
+                    </div>
+                    <div className="grid grid-cols-4 items-start gap-4">
+                        <Label htmlFor="denyIps" className="text-right pt-2">
+                           Deny IPs
+                        </Label>
+                        <Textarea id="denyIps" value={denyIps} onChange={e => setDenyIps(e.target.value)} placeholder="66.249.64.0/19" className="col-span-3 min-h-[80px]" />
                     </div>
                 </div>
                 <DialogFooter>
