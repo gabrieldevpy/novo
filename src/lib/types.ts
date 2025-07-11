@@ -11,6 +11,7 @@ export interface LogEntry {
 export interface RouteConfig {
   id: string;
   slug: string;
+  realUrl: string;
   redirectBotTo: string;
   active: boolean;
   template: string;

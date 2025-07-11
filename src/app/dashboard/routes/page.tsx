@@ -19,7 +19,7 @@ const mockRoutes: RouteConfig[] = [];
 
 const templates = {
     'Facebook Ads': {
-        denyUserAgents: `facebookexternalhit/1.1\nFacebot\nfacebookexternalhit\nFacebot`,
+        denyUserAgents: `facebookexternalhit/1.1\nFacebot\nfacebookexternalhit\nFacebot\nfacebookcatalog/1.0`,
         denyIps: `# Facebook / Meta\n31.13.24.0/21\n69.63.176.0/20\n66.220.144.0/20\n69.171.224.0/19\n157.240.0.0/16`,
     },
     'Google Ads': {
@@ -51,7 +51,7 @@ export default function RoutesPage() {
                             <TableHead>Status</TableHead>
                             <TableHead>Slug</TableHead>
                             <TableHead className="hidden md:table-cell">Redirecionamento de Bot</TableHead>
-                            <TableHead className="hidden lg:table-cell">Modelo</TableHead>
+                            <TableHead className="hidden lg:table-cell">URL Real</TableHead>
                             <TableHead className="hidden sm:table-cell">Criado Em</TableHead>
                             <TableHead className="text-right">Ações</TableHead>
                         </TableRow>
@@ -73,7 +73,7 @@ export default function RoutesPage() {
                                     </TableCell>
                                     <TableCell className="font-mono">/{route.slug}</TableCell>
                                     <TableCell className="hidden md:table-cell font-mono text-xs">{route.redirectBotTo}</TableCell>
-                                    <TableCell className="hidden lg:table-cell">{route.template}</TableCell>
+                                    <TableCell className="hidden lg:table-cell font-mono text-xs">{route.realUrl}</TableCell>
                                     <TableCell className="hidden sm:table-cell">{new Date(route.createdAt).toLocaleDateString()}</TableCell>
                                     <TableCell className="text-right">
                                         <DropdownMenu>
@@ -135,6 +135,12 @@ function CreateRouteDialog() {
                             Slug
                         </Label>
                         <Input id="slug" placeholder="meu-produto-incrivel" className="col-span-3" />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="realUrl" className="text-right">
+                           URL de Destino (Humano)
+                        </Label>
+                        <Input id="realUrl" placeholder="https://seusite.com/oferta" className="col-span-3" />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="redirectBotTo" className="text-right">
