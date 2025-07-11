@@ -1,23 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Bot, FileDown, Filter, User, Route as RouteIcon } from 'lucide-react';
+import { Bot, FileDown, Filter, User, Route as RouteIcon, ShieldCheck } from 'lucide-react';
 import type { LogEntry } from '@/lib/types';
 import Link from 'next/link';
 
-const mockLogs: LogEntry[] = [
-  { id: '1', ip: '203.0.113.1', userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ...', route: '/promo-1', type: 'human', timestamp: '2023-10-27T10:00:00Z' },
-  { id: '2', ip: '198.51.100.2', userAgent: 'Googlebot/2.1 (+http://www.google.com/bot.html)', route: '/promo-2', type: 'bot', botType: 'Google', timestamp: '2023-10-27T10:01:00Z' },
-  { id: '3', ip: '203.0.113.2', userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0_3 like Mac OS X) ...', route: '/promo-1', type: 'human', timestamp: '2023-10-27T10:02:00Z' },
-  { id: '4', ip: '198.51.100.3', userAgent: 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)', route: '/offer-3', type: 'bot', botType: 'Facebook', timestamp: '2023-10-27T10:03:00Z' },
-  { id: '5', ip: '203.0.113.3', userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) ...', route: '/main-offer', type: 'human', timestamp: '2023-10-27T10:04:00Z' },
-  { id: '6', ip: '198.51.100.4', userAgent: 'Mozilla/5.0 (compatible; AhrefsBot/7.0; +http://ahrefs.com/robot/)', route: '/promo-1', type: 'bot', botType: 'Ahrefs', timestamp: '2023-10-27T10:05:00Z' },
-];
+const mockLogs: LogEntry[] = [];
 
 export default function DashboardPage() {
   return (
@@ -29,8 +21,8 @@ export default function DashboardPage() {
             <User className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12,345</div>
-            <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-xs text-muted-foreground">No data available yet</p>
           </CardContent>
         </Card>
         <Card>
@@ -39,8 +31,8 @@ export default function DashboardPage() {
             <Bot className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">4,567</div>
-            <p className="text-xs text-muted-foreground">+180.1% from last month</p>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-xs text-muted-foreground">No data available yet</p>
           </CardContent>
         </Card>
         <Card>
@@ -49,7 +41,7 @@ export default function DashboardPage() {
             <RouteIcon className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">23</div>
+            <div className="text-2xl font-bold">0</div>
             <p className="text-xs text-muted-foreground">Manage your cloaked routes</p>
           </CardContent>
         </Card>
@@ -107,22 +99,28 @@ export default function DashboardPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockLogs.map((log) => (
-                  <TableRow key={log.id}>
-                    <TableCell>
-                      <Badge variant={log.type === 'bot' ? 'destructive' : 'secondary'}>
+                {mockLogs.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                      No activity logs found.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  mockLogs.map((log) => (
+                    <TableRow key={log.id}>
+                      <TableCell>
                         <div className="flex items-center gap-2">
                             {log.type === 'bot' ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
                             <span className="capitalize">{log.botType || log.type}</span>
                         </div>
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="font-mono">{log.ip}</TableCell>
-                    <TableCell className="font-mono">{log.route}</TableCell>
-                    <TableCell className="hidden md:table-cell max-w-xs truncate font-mono text-xs">{log.userAgent}</TableCell>
-                    <TableCell className="hidden sm:table-cell">{new Date(log.timestamp).toLocaleString()}</TableCell>
-                  </TableRow>
-                ))}
+                      </TableCell>
+                      <TableCell className="font-mono">{log.ip}</TableCell>
+                      <TableCell className="font-mono">{log.route}</TableCell>
+                      <TableCell className="hidden md:table-cell max-w-xs truncate font-mono text-xs">{log.userAgent}</TableCell>
+                      <TableCell className="hidden sm:table-cell">{new Date(log.timestamp).toLocaleString()}</TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>

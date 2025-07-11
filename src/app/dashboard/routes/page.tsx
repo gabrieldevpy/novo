@@ -15,12 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import type { RouteConfig } from '@/lib/types';
 import { Copy, MoreHorizontal, PlusCircle } from 'lucide-react';
 
-const mockRoutes: RouteConfig[] = [
-    { id: '1', slug: 'promo-1', redirectBotTo: 'https://google.com', active: true, template: 'Facebook Ads', createdAt: '2023-10-26T10:00:00Z', totalAccesses: 5210, botsBlocked: 1340 },
-    { id: '2', slug: 'promo-2', redirectBotTo: 'https://bing.com', active: true, template: 'Google Ads', createdAt: '2023-10-25T11:30:00Z', totalAccesses: 890, botsBlocked: 612 },
-    { id: '3', slug: 'offer-3', redirectBotTo: 'https://yahoo.com', active: false, template: 'TikTok Ads', createdAt: '2023-10-24T09:00:00Z', totalAccesses: 1532, botsBlocked: 211 },
-    { id: '4', slug: 'main-offer', redirectBotTo: 'https://duckduckgo.com', active: true, template: 'Custom', createdAt: '2023-10-23T14:00:00Z', totalAccesses: 10231, botsBlocked: 3452 },
-];
+const mockRoutes: RouteConfig[] = [];
 
 const templates = {
     'Facebook Ads': {
@@ -62,33 +57,41 @@ export default function RoutesPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {mockRoutes.map((route) => (
-                            <TableRow key={route.id}>
-                                <TableCell>
-                                    <Badge variant={route.active ? 'default' : 'outline'} className={route.active ? 'bg-accent text-accent-foreground' : ''}>
-                                        {route.active ? 'Active' : 'Inactive'}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell className="font-mono">/{route.slug}</TableCell>
-                                <TableCell className="hidden md:table-cell font-mono text-xs">{route.redirectBotTo}</TableCell>
-                                <TableCell className="hidden lg:table-cell">{route.template}</TableCell>
-                                <TableCell className="hidden sm:table-cell">{new Date(route.createdAt).toLocaleDateString()}</TableCell>
-                                <TableCell className="text-right">
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon">
-                                                <MoreHorizontal className="w-4 h-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent>
-                                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                                            <DropdownMenuItem><Copy className="w-4 h-4 mr-2" />Clone</DropdownMenuItem>
-                                            <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                        {mockRoutes.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={6} className="h-24 text-center">
+                                    No routes created yet.
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        ) : (
+                            mockRoutes.map((route) => (
+                                <TableRow key={route.id}>
+                                    <TableCell>
+                                        <Badge variant={route.active ? 'default' : 'outline'} className={route.active ? 'bg-accent text-accent-foreground' : ''}>
+                                            {route.active ? 'Active' : 'Inactive'}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="font-mono">/{route.slug}</TableCell>
+                                    <TableCell className="hidden md:table-cell font-mono text-xs">{route.redirectBotTo}</TableCell>
+                                    <TableCell className="hidden lg:table-cell">{route.template}</TableCell>
+                                    <TableCell className="hidden sm:table-cell">{new Date(route.createdAt).toLocaleDateString()}</TableCell>
+                                    <TableCell className="text-right">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon">
+                                                    <MoreHorizontal className="w-4 h-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent>
+                                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                                                <DropdownMenuItem><Copy className="w-4 h-4 mr-2" />Clone</DropdownMenuItem>
+                                                <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
                     </TableBody>
                 </Table>
             </CardContent>
@@ -173,7 +176,3 @@ function CreateRouteDialog() {
         </Dialog>
     )
 }
-
-const RouteIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M6 15V6c0-1.1.9-2 2-2h5"/><path d="m13 14 3-3 3 3"/><path d="M16 11V6"/></svg>
-)
