@@ -6,7 +6,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Bot, FileDown, Filter, User } from 'lucide-react';
+import { Bot, FileDown, Filter, User, Route as RouteIcon } from 'lucide-react';
 import type { LogEntry } from '@/lib/types';
 import Link from 'next/link';
 
